@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 
 RUN mkdir -p /opt
+RUN mkdir -p /research
 WORKDIR /opt
 
 # change source mirror site
@@ -8,6 +9,22 @@ RUN sed -i 's|http://archive.ubuntu.com|http://mirror1.ku.ac.th|g' /etc/apt/sour
 
 # update
 RUN apt-get update
-RUN apt-get install -y build-essential apt-utils curl autoconf automake libxmu-dev
+RUN apt-get install -y build-essential apt-utils wget curl autoconf automake libxmu-dev
 RUN apt-get upgrade -y
 
+# download NS 2.35
+RUN cd /research \
+&& wget https://jaist.dl.sourceforge.net/project/nsnam/allinone/ns-allinone-2.35/ns-allinone-2.35.tar.gz
+RUN cd /research \
+&& wget https://raw.githubusercontent.com/worcode/network-simulation-series/master/ns-2.35/patch/ls-h-fix.patch
+RUN cd /research \
+&& tar xvf ns-allinone-2.35.tar.gz
+
+# patch ls.h file
+RUN cd /research \
+&& patch -b -p0 < ls-h-fix.patch
+
+# make install ns
+RUN chmod +x /research/ns-allinone-2.35/install
+RUN cd /research/ns-allinone-2.35/ \
+&& ./install
