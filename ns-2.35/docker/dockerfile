@@ -17,10 +17,10 @@ RUN cd /research \
 && wget https://jaist.dl.sourceforge.net/project/nsnam/allinone/ns-allinone-2.35/ns-allinone-2.35.tar.gz
 RUN cd /research \
 && wget https://raw.githubusercontent.com/worcode/network-simulation-series/master/ns-2.35/patch/ls-h-fix.patch
+
+# extract source file and patch 
 RUN cd /research \
 && tar xvf ns-allinone-2.35.tar.gz
-
-# patch ls.h file
 RUN cd /research \
 && patch -b -p0 < ls-h-fix.patch
 
@@ -28,3 +28,18 @@ RUN cd /research \
 RUN chmod +x /research/ns-allinone-2.35/install
 RUN cd /research/ns-allinone-2.35/ \
 && ./install
+
+# set ENV
+ENV OTCL_LIB=/research/ns-allinone-2.35/otcl-1.14
+ENV NS2_LIB=/research/ns-allinone-2.35/lib
+ENV X11_LIB=/usr/X11R6/lib
+ENV USR_LOCAL_LIB=/usr/local/lib
+RUN export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OTCL_LIB:$NS2_LIB:$X11_LIB:$USR_LOCAL_LIB
+
+ENV TCL_LIB=/research/ns-allinone-2.35/tcl8.5.10/library
+ENV USR_LIB=/usr/lib
+RUN export TCL_LIBRARY=$TCL_LIB:$USR_LIB
+
+ENV XGRAPH=/research/ns-allinone-2.35/bin:/research/ns-allinone-2.35/tcl8.5.10/unix:/research/ns-allinone-2.35/tk8.5.10/unix
+ENV NS=/research/ns-allinone-2.35/ns-2.35/
+ENV PATH=$PATH:$XGRAPH:$NS
